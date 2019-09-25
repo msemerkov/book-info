@@ -1,0 +1,52 @@
+version: "3.2"
+
+services:
+  web:
+    depends_on:
+      - postgres
+    build: .
+    env_file: .env
+#    restart: always
+    command: bash -I -c "alembic upgrade head && cd src && python app.py"
+    links:
+      - postgres
+    volumes:
+      - ./src:/src
+    expose:
+      - "8000"
+    ports:
+      - 8000:8000
+  postgres:
+    image: postgres:11
+    env_file: .env
+    volumes:
+      - ./data/postgres-data:/var/lib/postgresql/data
+    ports:
+      - 8004:5432
+#  db:
+#    restart: always
+#    image: postgres:11
+#    container_name: db
+#    environment:
+#      POSTGRES_USER: ${POSTGIS_ENV_POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGIS_ENV_POSTGRES_PASSWORD}
+#      POSTGRES_DB: ${POSTGIS_ENV_POSTGRES_DB}
+#    ports:
+#      - 2345:5432
+#  web:
+#    restart: always
+#    build: .
+#    container_name: web
+#
+#    command: bash -I -c "alembic upgrade head && python src/app.py"
+#    volumes:
+#      - ./src:/src
+##    command: gunicorn myapp:app --bind 0.0.0.0:8000 --worker-class sanic.worker.GunicornWorker
+##    command: hypercorn run_asgi:app
+##    command: alembic upgrade head
+#    ports:
+#      - "8000:8000"
+#    links:
+#      - db
+#    depends_on:
+#      - db
